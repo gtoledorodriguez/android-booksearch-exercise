@@ -11,7 +11,7 @@ class Book(
     var author: String? = null,
     var title: String? = null,
     // Get book cover from covers API
-    val coverUrl: String = "https://covers.openlibrary.org/b/olid/$openLibraryId-L.jpg?default=false"
+    var coverUrl: String = "https://covers.openlibrary.org/b/olid/$openLibraryId-L.jpg?default=false"
 ) {
 
     companion object {
@@ -23,6 +23,7 @@ class Book(
                 // Check if a cover edition is available
                 if (jsonObject.has("cover_edition_key")) {
                     book.openLibraryId = jsonObject.getString("cover_edition_key")
+                    book.coverUrl = "https://covers.openlibrary.org/b/olid/"+ book.openLibraryId+"-L.jpg?default=false"
                 } else if (jsonObject.has("edition_key")) {
                     val ids = jsonObject.getJSONArray("edition_key")
                     book.openLibraryId = ids.getString(0)

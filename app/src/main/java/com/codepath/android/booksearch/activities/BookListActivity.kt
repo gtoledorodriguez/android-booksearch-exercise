@@ -7,6 +7,8 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.SearchView
+import androidx.appcompat.widget.Toolbar
 import androidx.core.view.MenuItemCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -21,7 +23,7 @@ import com.codepath.asynchttpclient.callback.JsonHttpResponseHandler
 import okhttp3.Headers
 import org.json.JSONArray
 import org.json.JSONException
-import java.util.ArrayList
+import java.util.*
 
 
 class BookListActivity : AppCompatActivity() {
@@ -37,6 +39,11 @@ class BookListActivity : AppCompatActivity() {
         // Checkpoint #3
         // Switch Activity to Use a Toolbar
         // see http://guides.codepath.org/android/Using-the-App-ToolBar#using-toolbar-as-actionbar
+        // Find the toolbar view inside the activity layout
+        val toolbar: Toolbar = findViewById<View>(R.id.toolbar) as Toolbar
+        // Sets the Toolbar to act as the ActionBar for this Activity window.
+        // Make sure the toolbar exists in the activity and is not null
+        setSupportActionBar(toolbar)
 
         // Initialize the adapter
         bookAdapter = BookAdapter(this, booksList)
@@ -66,7 +73,7 @@ class BookListActivity : AppCompatActivity() {
         rvBooks.layoutManager = LinearLayoutManager(this)
 
         // Fetch the data remotely
-        fetchBooks("Oscar Wilde")
+        //fetchBooks("Oscar Wilde")
     }
 
     // Executes an API call to the OpenLibrary search endpoint, parses the results
@@ -108,6 +115,23 @@ class BookListActivity : AppCompatActivity() {
         // Add SearchView to Toolbar
         // Refer to http://guides.codepath.org/android/Extended-ActionBar-Guide#adding-searchview-to-actionbar guide for more details
 
+        val searchItem = menu.findItem(R.id.action_search)
+        val searchView = MenuItemCompat.getActionView(searchItem) as SearchView
+
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String): Boolean {
+                // perform query here
+                fetchBooks(query)
+                // workaround to avoid issues with some emulators and keyboard devices firing twice if a keyboard enter is used
+                // see https://code.google.com/p/android/issues/detail?id=24599
+                searchView.clearFocus()
+                return true
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                return false
+            }
+        })
 
         // Checkpoint #7 Show Progress Bar
         // see https://guides.codepath.org/android/Handling-ProgressBars#progress-within-actionbar
